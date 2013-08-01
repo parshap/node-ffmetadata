@@ -1,0 +1,33 @@
+{
+  "name": "ffmetadata",
+  "version": "0.0.0",
+  "description": "Read and write media metadata using ffmpeg",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "node test/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:parshap/node-ffmetadata.git"
+  },
+  "keywords": [
+    "music",
+    "media",
+    "metadata",
+    "ffmetadata",
+    "ffmpeg",
+    "mp3",
+    "id3"
+  ],
+  "author": "Parsha Pourkhomami",
+  "license": "Public Domain",
+  "bugs": {
+    "url": "https://github.com/parshap/node-ffmetadata/issues"
+  },
+  "devDependencies": {
+    "tape": "~1.0.4"
+  }
+}
