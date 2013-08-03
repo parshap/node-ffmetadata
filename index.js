@@ -52,6 +52,53 @@ function spawnRead() {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
+// -- ffprobe
+
+var format = module.exports.format = function format(callback) {
+	var stream = through(),
+		proc = ffprobe(),
+		output = concat(),
+		error = concat();
+
+	stream.pipe(proc.stdin);
+	proc.stdout.pipe(output);
+	proc.stderr.pipe(error);
+	proc.on("error", stream.emit.bind(stream, "error"));
+
+	// Work around pipe ECONNRESET error
+	proc.stdin.on("error", function(err) {
+		if (err.errno !== "ECONNRESET") {
+			stream.emit("error", err);
+		}
+	});
+
+	proc.on("close", function(code) {
+		if (code === 0) {
+			stream.emit("format", JSON.parse(output.getBody().toString()));
+		}
+		else {
+			stream.emit("error", new Error(error.getBody().toString()));
+		}
+	});
+
+	if (callback) {
+		stream.on("format", callback);
+	}
+
+	return stream;
+};
+
+function ffprobe() {
+	var args = [
+		"-print_format",
+		"json",
+		"-show_format",
+		"pipe:0",
+	];
+
+	return spawn("ffprobe", args);
+}
+
 // -- Parse ini
 
 var combine = require("stream-combiner"),

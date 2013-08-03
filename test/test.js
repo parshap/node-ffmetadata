@@ -18,3 +18,11 @@ test("read metadata", function(t) {
 			t.end();
 		}));
 });
+
+test("get format data", function(t) {
+	fs.createReadStream(TEST_FILE)
+		.pipe(ffmetadata.format(function(data) {
+			t.ok(data);
+			t.end();
+		}));
+});
