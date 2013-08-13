@@ -1,13 +1,14 @@
 /* jshint node:true */
 "use strict";
 
-var ffmpeg = require("child_process").spawn.bind(null, "ffmpeg"),
+var spawn = require("child_process").spawn,
+	ffmpeg = spawn.bind(null, "ffmpeg"),
 	through = require("through"),
 	concat = require("concat-stream");
 
 var domain = require("domain");
 
-module.exports = function(callback) {
+module.exports.read = function(callback) {
 	var stream = through(),
 		proc = spawnRead(),
 		output = parseini(),
@@ -23,7 +24,10 @@ module.exports = function(callback) {
 		}
 	});
 
+	// Parse ffmetadata "ini" output
 	proc.stdout.pipe(output);
+
+	// Capture stderr
 	proc.stderr.pipe(error);
 
 	proc.on("close", function(code) {
@@ -31,13 +35,68 @@ module.exports = function(callback) {
 			stream.emit("metadata", output.data);
 		}
 		else {
-			stream.emit("error", new Error(error.getBody()));
+			stream.emit("error", new Error(error.getBody().toString()));
 		}
 	});
 
+	if (callback) {
+		stream.on("metadata", callback);
+	}
+
 	stream.pipe(proc.stdin);
-	stream.on("metadata", callback);
 	return stream;
+};
+
+var stream = require("stream");
+
+module.exports.write = function(data) {
+	var tee = through();
+	var retstream = through(function(data) {
+		tee.write(data);
+	}, function() {
+		tee.end();
+	});
+
+	var buffer = new stream.PassThrough({ highWaterMark: Infinity });
+
+	tee.pipe(buffer);
+
+	var formatStream = tee.pipe(format(function(format) {
+		var proc = spawnWrite(data, format.format.format_name);
+		var error = concat();
+
+		buffer.pipe(proc.stdin);
+
+		// Work around pipe ECONNRESET error
+		proc.stdin.on("error", function(err) {
+			if (err.errno !== "ECONNRESET") {
+				retstream.emit("error", err);
+			}
+		});
+
+		// Proxy any child process error events
+		proc.on("error", retstream.emit.bind(retstream, "error"));
+
+		// Proxy child process stdout but don't end the stream until we know
+		// the process exits with a zero exit code
+		proc.stdout.on("data", retstream.emit.bind(retstream, "data"));
+
+		// Capture stderr (to use in case of non-zero exit code)
+		proc.stderr.pipe(error);
+
+		proc.on("close", function(code) {
+			if (code === 0) {
+				retstream.emit("end");
+			}
+			else {
+				retstream.emit("error", new Error(error.getBody().toString()));
+			}
+		});
+	}));
+
+	formatStream.on("error", retstream.emit.bind(retstream, "error"));
+
+	return retstream;
 };
 
 function spawnRead() {
@@ -50,6 +109,27 @@ function spawnRead() {
 	];
 
 	return ffmpeg(args, { detached: true, encoding: "binary" });
+}
+
+function spawnWrite(data, format) {
+	var args = [
+		"-i",
+		"pipe:0", // input from stdin
+		"-codec",
+		"copy",
+	];
+
+	// Write metadata
+	Object.keys(data).forEach(function(name) {
+		args.push("-metadata");
+		args.push(escapeini(name) + "=" + escapeini(data[name]));
+	});
+
+	args.push("-f", format);
+
+	args.push("pipe:1"); // output to stdout
+
+	return ffmpeg(args);
 }
 
 // -- ffprobe
@@ -131,6 +211,11 @@ function parseini(callback) {
 
 function isNotComment(data) {
 	return data.slice(0, 1) !== ";";
+}
+
+function escapeini(data) {
+	// @TODO
+	return data;
 }
 
 function unescapeini(data) {
