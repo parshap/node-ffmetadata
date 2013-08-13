@@ -19,7 +19,7 @@ module.exports.read = function(callback) {
 
 	// Work around pipe ECONNRESET error
 	proc.stdin.on("error", function(err) {
-		if (err.errno !== "ECONNRESET") {
+		if (err.errno !== "ECONNRESET" && err.errno !== "EPIPE") {
 			stream.emit("error", err);
 		}
 	});
@@ -69,7 +69,7 @@ module.exports.write = function(data) {
 
 		// Work around pipe ECONNRESET error
 		proc.stdin.on("error", function(err) {
-			if (err.errno !== "ECONNRESET") {
+			if (err.errno !== "ECONNRESET" && err.errno !== "EPIPE") {
 				retstream.emit("error", err);
 			}
 		});
@@ -147,7 +147,7 @@ var format = module.exports.format = function format(callback) {
 
 	// Work around pipe ECONNRESET error
 	proc.stdin.on("error", function(err) {
-		if (err.errno !== "ECONNRESET") {
+		if (err.errno !== "ECONNRESET" && err.errno !== "EPIPE") {
 			stream.emit("error", err);
 		}
 	});
