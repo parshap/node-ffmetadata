@@ -3,6 +3,11 @@
 Read and write media file meta data (e.g., MP3 ID3 tags) using ffmpeg's
 metadata framework.
 
+**Known issue with embedded images:** ffmpeg seems to have an issue
+when the input contains images embedded in the audio file (e.g., album
+artwork). See this [*ffmpeg-users* post](http://ffmpeg.org/pipermail/ffmpeg-user/2013-August/016667.html)
+for more information.
+
 # Example
 
 ```js
