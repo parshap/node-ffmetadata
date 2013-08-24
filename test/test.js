@@ -3,47 +3,77 @@
 
 var path = require("path"),
 	fs = require("fs"),
+	through = require("through"),
 	test = require("tape"),
 	ffmetadata = require("../");
 
-var TEST_FILE = path.join(__dirname, "test.mp3"),
-	TEST_FILE_ARTWORK = path.join(__dirname, "test-artwork.mp3");
+var TEST_FILE_ORIG = path.join(__dirname, "test.mp3"),
+	TEST_FILE_ARTWORK_ORIG = path.join(__dirname, "test-artwork.mp3"),
+	TEST_FILE = path.join(__dirname, "__test.mp3"),
+	TEST_FILE_ARTWORK = path.join(__dirname, "__test-artwork.mp3");
+
+function copy(src, dst) {
+	var stream = through(),
+		readStream = fs.createReadStream(src),
+		writeStream = fs.createWriteStream(dst);
+	readStream.pipe(writeStream);
+	writeStream.on("finish", stream.emit.bind(stream, "end"));
+	return stream;
+}
+
+var PassThrough = require("stream").PassThrough;
+function ender() {
+	var stream = new PassThrough();
+	var remaining = 0;
+	var end = stream.end.bind(stream);
+	stream.end = function() {
+		remaining -= 1;
+		if (remaining === 0) end();
+	};
+	stream.on("pipe", function() {
+		remaining += 1;
+	});
+	stream.resume();
+	return stream;
+}
+
+test("copy test files", function(t) {
+	var end = ender();
+	copy(TEST_FILE_ORIG, TEST_FILE).pipe(end);
+	copy(TEST_FILE_ARTWORK_ORIG, TEST_FILE_ARTWORK).pipe(end);
+	end.on("end", t.end.bind(t));
+});
 
 test("read metadata", function(t) {
-	fs.createReadStream(TEST_FILE)
-		.pipe(ffmetadata.read(function(data) {
-			t.ok(data);
-			t.ok(data.artist);
-			t.end();
-		}));
+	ffmetadata.read(TEST_FILE, function(err, data) {
+		t.ifError(err);
+		t.ok(data);
+		t.ok(data.artist);
+		t.end();
+	});
 });
 
 test("write metadata", function(t) {
-	fs.createReadStream(TEST_FILE)
-		.pipe(ffmetadata.write({
+		ffmetadata.write(TEST_FILE, {
 			artist: "foo",
-		}))
-		.pipe(ffmetadata.read(function(data) {
-			t.equal(data.artist, "foo");
-			t.end();
-		}));
+		}, function(err) {
+			t.ifError(err);
+			ffmetadata.read(TEST_FILE, function(err, data) {
+				t.ifError(err);
+				t.equal(data.artist, "foo");
+				t.end();
+			});
+		});
 });
-
 test("write metadata with artwork", function(t) {
-	fs.createReadStream(TEST_FILE_ARTWORK)
-		.pipe(ffmetadata.write({
+		ffmetadata.write(TEST_FILE_ARTWORK, {
 			artist: "foo",
-		}))
-		.pipe(ffmetadata.read(function(data) {
-			t.equal(data.artist, "foo");
-			t.end();
-		}));
-});
-
-test("get format data", function(t) {
-	fs.createReadStream(TEST_FILE)
-		.pipe(ffmetadata.format(function(data) {
-			t.ok(data);
-			t.end();
-		}));
+		}, function(err) {
+			t.ifError(err);
+			ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
+				t.ifError(err);
+				t.equal(data.artist, "foo");
+				t.end();
+			});
+		});
 });
