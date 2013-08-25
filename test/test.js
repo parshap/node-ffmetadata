@@ -56,11 +56,15 @@ test("read metadata", function(t) {
 test("write metadata", function(t) {
 		ffmetadata.write(TEST_FILE, {
 			artist: "foo",
+			track: "1/10",
+			disc: "2/2",
 		}, function(err) {
 			t.ifError(err);
 			ffmetadata.read(TEST_FILE, function(err, data) {
 				t.ifError(err);
 				t.equal(data.artist, "foo");
+				t.equal(data.track, "1/10");
+				t.equal(data.disc, "2/2");
 				t.end();
 			});
 		});
