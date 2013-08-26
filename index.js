@@ -89,6 +89,8 @@ function spawnWrite(src, data) {
 		"-y",
 		"-i",
 		src, // input from src path
+		"-map",
+		"0",
 		"-codec",
 		"copy",
 	];
