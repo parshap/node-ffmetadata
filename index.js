@@ -3,6 +3,7 @@
 
 var spawn = require("child_process").spawn,
 	ffmpeg = spawn.bind(null, "ffmpeg"),
+	fs = require("fs"),
 	through = require("through"),
 	concat = require("concat-stream");
 
@@ -40,7 +41,8 @@ module.exports.read = function(src, callback) {
 
 module.exports.write = function(src, data, callback) {
 	var stream = through(),
-		proc = spawnWrite(src, data),
+		dst = getTempPath(src),
+		proc = spawnWrite(src, dst, data),
 		error = concat();
 
 	// Proxy any child process error events
@@ -55,10 +57,10 @@ module.exports.write = function(src, data, callback) {
 
 	proc.on("close", function(code) {
 		if (code === 0) {
-			stream.emit("end");
+			finish();
 		}
 		else {
-			stream.emit("error", new Error(error.getBody().toString()));
+			handleError(new Error(error.getBody().toString()));
 		}
 	});
 
@@ -67,8 +69,35 @@ module.exports.write = function(src, data, callback) {
 		stream.on("error", callback);
 	}
 
+	function handleError(err) {
+		fs.unlink(dst, function() {
+			stream.emit("error", err);
+		});
+	}
+
+	function finish() {
+		fs.rename(dst, src, function(err) {
+			if (err) {
+				handleError(err);
+			}
+			else {
+				stream.emit("end");
+			}
+		});
+	}
+
 	return stream;
 };
+
+var path = require("path");
+function getTempPath(src) {
+	var ext = path.extname(src),
+		basename = path.basename(src).slice(0, -ext.length),
+		newName = basename + ".ffmetadata" + ext,
+		dirname = path.dirname(src),
+		newPath = path.join(dirname, newName);
+	return newPath;
+}
 
 // -- Child process helpers
 
@@ -84,7 +113,7 @@ function spawnRead(src) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
-function spawnWrite(src, data) {
+function spawnWrite(src, dst, data) {
 	var args = [
 		"-y",
 		"-i",
@@ -101,7 +130,7 @@ function spawnWrite(src, data) {
 		args.push(escapeini(name) + "=" + escapeini(data[name]));
 	});
 
-	args.push(src); // output to src path
+	args.push(dst); // output to src path
 
 	return ffmpeg(args);
 }
