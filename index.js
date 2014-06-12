@@ -39,13 +39,10 @@ module.exports.read = function(src, callback) {
 	return stream;
 };
 
-module.exports.write = function(opts, callback) {
+module.exports.write = function(src, data, callback) {
 	var stream = through(),
-		src = opts.src;
-
-	opts.dst = getTempPath(opts.src);
-	
-	var proc = spawnWrite(opts),
+		dst = getTempPath(src),
+		proc = spawnWrite(src, dst, data),
 		error = concat();
 
 	// Proxy any child process error events
@@ -73,13 +70,13 @@ module.exports.write = function(opts, callback) {
 	}
 
 	function handleError(err) {
-		fs.unlink(opts.dst, function() {
+		fs.unlink(dst, function() {
 			stream.emit("error", err);
 		});
 	}
 
 	function finish() {
-		fs.rename(opts.dst, src, function(err) {
+		fs.rename(dst, src, function(err) {
 			if (err) {
 				handleError(err);
 			}
@@ -116,34 +113,34 @@ function spawnRead(src) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
-function spawnWrite(opts) {
+function spawnWrite(src, dst, data) {
 
 	// ffmpeg options
-
-	var inputs = ["-i", opts.src], 
-		maps = ['-map', '0:0'],
+	var inputs = ["-i", src], // src input
+		maps = ['-map', '0:0'], // set as the first 
 		args = ["-y"]; // overwrite file
 
-	// append files and map options if included. This is in order, which is probably not needed but produces a clear ffmpeg output
-	if(typeof opts.append !== 'undefined'){
-		opts.append.forEach(function(el, i){
+	// append files and map options if included. This is in order, which describes the streams in order
+	if(typeof data._append !== 'undefined'){
+		data._append.forEach(function(el, i){
 			i++; 
 			inputs = inputs.concat('-i', el)
 			maps = maps.concat("-map", i + ":0");
 		});
+		delete data._append;
 	}
 
 	// copy flag in order to not transcode
 	args = args.concat(inputs, maps, ["-codec", "copy"])
 	
 	// append metadata
-	Object.keys(opts.data).forEach(function(name) {
+	Object.keys(data).forEach(function(name) {
 		args.push("-metadata");
-		args.push(escapeini(name) + "=" + escapeini(opts.data[name]));
+		args.push(escapeini(name) + "=" + escapeini(data[name]));
 	});
 
-	args.push(opts.dst); // output to src path
-
+	args.push(dst); // output to src path
+	
 	return ffmpeg(args);
 }
 
