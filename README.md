@@ -15,13 +15,30 @@ ffmetadata.read("song.mp3", function(err, data) {
 	else console.log(data);
 });
 
-// Set the artist for song.mp3
-ffmetadata.write("song.mp3", {
-	artist: "Me",
+// Set the artist and cover image for song.mp3
+ffmetadata.write({
+	src: "song.mp3", 
+	append: ['album.jpg'], // array of files
+	data: {
+		artist: "Me"
+	}
 }, function(err) {
 	if (err) console.error("Error writing metadata");
 	else console.log("Data written");
 });
+```
+## Metadata
+
+Other ffmpeg meta tags (for songs) might include 
+
+```
+	artist //artist name
+	album //album name
+	title //song title
+	track //place in the album (e.g. track 5/8)
+	disc //for multidisc albums
+	label //record label
+	date //arbitrary, but usually year (e.g. 2002)
 ```
 
 # Installation

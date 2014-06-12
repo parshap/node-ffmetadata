@@ -10,6 +10,7 @@ var path = require("path"),
 var TEST_FILE_ORIG = path.join(__dirname, "test.mp3"),
 	TEST_FILE_ARTWORK_ORIG = path.join(__dirname, "test-artwork.mp3"),
 	TEST_FILE = path.join(__dirname, "__test.mp3"),
+	TEST_ARTWORK = path.join(__dirname, "test.jpg"),
 	TEST_FILE_ARTWORK = path.join(__dirname, "__test-artwork.mp3");
 
 function copy(src, dst) {
@@ -54,10 +55,13 @@ test("read metadata", function(t) {
 });
 
 test("write metadata", function(t) {
-		ffmetadata.write(TEST_FILE, {
-			artist: "foo",
-			track: "1/10",
-			disc: "2/2",
+		ffmetadata.write({
+			src: TEST_FILE,
+			data: {
+				artist: "foo",
+				track: "1/10",
+				disc: "2/2",
+			},
 		}, function(err) {
 			t.ifError(err);
 			ffmetadata.read(TEST_FILE, function(err, data) {
@@ -70,12 +74,32 @@ test("write metadata", function(t) {
 		});
 });
 test("write metadata with artwork", function(t) {
-		ffmetadata.write(TEST_FILE_ARTWORK, {
-			artist: "foo",
+		ffmetadata.write({
+			src: TEST_FILE_ARTWORK,
+			data: {
+				artist: "foo"
+			}
 		}, function(err) {
 			t.ifError(err);
 			ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
 				t.ifError(err);
+				t.equal(data.artist, "foo");
+				t.end();
+			});
+		});
+});
+test("adding artwork to metadata", function(t) {
+		ffmetadata.write({
+			src: TEST_FILE,	
+			append: [TEST_ARTWORK],
+			data: {
+				artist: "foo"
+			}
+		}, function(err) {
+			t.ifError(err);
+			ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
+				t.ifError(err);
+				console.log(data)
 				t.equal(data.artist, "foo");
 				t.end();
 			});
