@@ -16,16 +16,22 @@ ffmetadata.read("song.mp3", function(err, data) {
 });
 
 // Set the artist and cover image for song.mp3
-ffmetadata.write({
-	src: "song.mp3", 
-	append: ['album.jpg'], // array of files
-	data: {
-		artist: "Me"
-	}
+ffmetadata.write("song.mp3", 
+	artist: "Me"
 }, function(err) {
 	if (err) console.error("Error writing metadata");
 	else console.log("Data written");
 });
+```
+## Artwork
+
+You can optionally include an array of files to be added to the source file. This is a destructive action, it will overwrite any previous streams on the file. For audio data, this is typically just one image. For video, this is where you would write additional audio streams or subtitle tracks.
+
+```js
+	data: {
+		_append: ["cover.jpg"] // optional
+	}
+
 ```
 ## Metadata
 
