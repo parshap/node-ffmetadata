@@ -114,25 +114,25 @@ function spawnRead(src) {
 }
 
 function spawnWrite(src, dst, data) {
-
 	// ffmpeg options
 	var inputs = ["-i", src], // src input
-		maps = ['-map', '0:0'], // set as the first 
+		maps = ['-map', '0:0'], // set as the first
 		args = ["-y"]; // overwrite file
 
-	// append files and map options if included. This is in order, which describes the streams in order
-	if(typeof data._append !== 'undefined'){
-		data._append.forEach(function(el, i){
-			i++; 
-			inputs = inputs.concat('-i', el)
-			maps = maps.concat("-map", i + ":0");
+	// Append files and map options if included. This is in order, which
+	// describes the streams in order.
+	if (data._append) {
+		data._append.forEach(function(el, i) {
+			i += 1;
+			inputs.push('-i', el);
+			maps.push("-map", i + ":0");
 		});
 		delete data._append;
 	}
 
-	// copy flag in order to not transcode
-	args = args.concat(inputs, maps, ["-codec", "copy"])
-	
+	// Copy flag in order to not transcode
+	args = args.concat(inputs, maps, ["-codec", "copy"]);
+
 	// append metadata
 	Object.keys(data).forEach(function(name) {
 		args.push("-metadata");
@@ -140,7 +140,7 @@ function spawnWrite(src, dst, data) {
 	});
 
 	args.push(dst); // output to src path
-	
+
 	return ffmpeg(args);
 }
 
