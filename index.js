@@ -39,10 +39,15 @@ module.exports.read = function(src, callback) {
 	return stream;
 };
 
-module.exports.write = function(src, data, callback) {
+module.exports.write = function(src, data, files, callback) {
+	if (typeof files === "function") {
+		callback = files;
+		files = [];
+	}
+
 	var stream = through(),
 		dst = getTempPath(src),
-		proc = spawnWrite(src, dst, data),
+		proc = spawnWrite(src, dst, data, files),
 		error = concat();
 
 	// Proxy any child process error events
@@ -113,7 +118,7 @@ function spawnRead(src) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
-function spawnWrite(src, dst, data) {
+function spawnWrite(src, dst, data, files) {
 	// ffmpeg options
 	var inputs = ["-i", src], // src input
 		maps = ['-map', '0:0'], // set as the first
@@ -121,14 +126,11 @@ function spawnWrite(src, dst, data) {
 
 	// Append files and map options if included. This is in order, which
 	// describes the streams in order.
-	if (data._append) {
-		data._append.forEach(function(el, i) {
-			i += 1;
-			inputs.push('-i', el);
-			maps.push("-map", i + ":0");
-		});
-		delete data._append;
-	}
+	files.forEach(function(el, i) {
+		i += 1;
+		inputs.push('-i', el);
+		maps.push("-map", i + ":0");
+	});
 
 	// Copy flag in order to not transcode
 	args = args.concat(inputs, maps, ["-codec", "copy"]);

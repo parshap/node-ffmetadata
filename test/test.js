@@ -73,8 +73,7 @@ test("write metadata", function(t) {
 test("write metadata with artwork", function(t) {
 	ffmetadata.write(TEST_FILE_ARTWORK, {
 		artist: "bar",
-		_append: [TEST_ARTWORK],
-	}, function(err) {
+	}, [TEST_ARTWORK], function(err) {
 		t.ifError(err);
 		ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
 			t.ifError(err);

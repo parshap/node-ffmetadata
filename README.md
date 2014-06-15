@@ -16,9 +16,10 @@ ffmetadata.read("song.mp3", function(err, data) {
 });
 
 // Set the artist for song.mp3
-ffmetadata.write("song.mp3", {
-	artist: "Me",
-}, function(err) {
+var data = {
+  artist: "Me",
+};
+ffmetadata.write("song.mp3", data, function(err) {
 	if (err) console.error("Error writing metadata");
 	else console.log("Data written");
 });
@@ -33,9 +34,7 @@ For video, this is where you would write additional audio streams or
 subtitle tracks.
 
 ```js
-ffmetadata.write("song.mp3", {
-  _append: ["cover.jpg"] // optional
-}, function(err) {
+ffmetadata.write("song.mp3", {}, ["cover.jpg"], function(err) {
 	if (err) console.error("Error writing cover art");
 	else console.log("Cover art added");
 });
