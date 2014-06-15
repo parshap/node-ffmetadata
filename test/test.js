@@ -8,9 +8,8 @@ var path = require("path"),
 	ffmetadata = require("../");
 
 var TEST_FILE_ORIG = path.join(__dirname, "test.mp3"),
-	TEST_FILE_ARTWORK_ORIG = path.join(__dirname, "test-artwork.mp3"),
 	TEST_FILE = path.join(__dirname, "__test.mp3"),
-	TEST_FILE_ARTWORK = path.join(__dirname, "__test-artwork.mp3");
+	TEST_ARTWORK = path.join(__dirname, "test-cover.jpg");
 
 function copy(src, dst) {
 	var stream = through(),
@@ -40,7 +39,6 @@ function ender() {
 test("copy test files", function(t) {
 	var end = ender();
 	copy(TEST_FILE_ORIG, TEST_FILE).pipe(end);
-	copy(TEST_FILE_ARTWORK_ORIG, TEST_FILE_ARTWORK).pipe(end);
 	end.on("end", t.end.bind(t));
 });
 
@@ -54,30 +52,33 @@ test("read metadata", function(t) {
 });
 
 test("write metadata", function(t) {
-		ffmetadata.write(TEST_FILE, {
-			artist: "foo",
-			track: "1/10",
-			disc: "2/2",
-		}, function(err) {
+	ffmetadata.write(TEST_FILE, {
+		artist: "foo",
+		track: "1/10",
+		disc: "2/2",
+	}, function(err) {
+		t.ifError(err);
+		ffmetadata.read(TEST_FILE, function(err, data) {
 			t.ifError(err);
-			ffmetadata.read(TEST_FILE, function(err, data) {
-				t.ifError(err);
-				t.equal(data.artist, "foo");
-				t.equal(data.track, "1/10");
-				t.equal(data.disc, "2/2");
-				t.end();
-			});
+			t.equal(data.artist, "foo");
+			t.equal(data.track, "1/10");
+			t.equal(data.disc, "2/2");
+			t.end();
 		});
+	});
 });
 test("write metadata with artwork", function(t) {
-		ffmetadata.write(TEST_FILE_ARTWORK, {
-			artist: "foo",
-		}, function(err) {
+	ffmetadata.write(TEST_FILE, {
+		artist: "bar",
+		_append: [TEST_ARTWORK],
+	}, function(err) {
+		t.ifError(err);
+		ffmetadata.read(TEST_FILE, function(err, data) {
 			t.ifError(err);
-			ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
-				t.ifError(err);
-				t.equal(data.artist, "foo");
-				t.end();
-			});
+			t.equal(data.artist, "bar");
+			t.end();
 		});
+	});
 });
+
+// TODO ensure integrity of additional streams 
