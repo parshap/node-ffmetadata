@@ -8,7 +8,9 @@ var path = require("path"),
 	ffmetadata = require("../");
 
 var TEST_FILE_ORIG = path.join(__dirname, "test.mp3"),
+	TEST_FILE_ARTWORK_ORIG = path.join(__dirname, "test-artwork.mp3"),
 	TEST_FILE = path.join(__dirname, "__test.mp3"),
+	TEST_FILE_ARTWORK = path.join(__dirname, "__test-artwork.mp3"),
 	TEST_ARTWORK = path.join(__dirname, "test-cover.jpg");
 
 function copy(src, dst) {
@@ -39,6 +41,7 @@ function ender() {
 test("copy test files", function(t) {
 	var end = ender();
 	copy(TEST_FILE_ORIG, TEST_FILE).pipe(end);
+	copy(TEST_FILE_ARTWORK_ORIG, TEST_FILE_ARTWORK).pipe(end);
 	end.on("end", t.end.bind(t));
 });
 
@@ -68,12 +71,12 @@ test("write metadata", function(t) {
 	});
 });
 test("write metadata with artwork", function(t) {
-	ffmetadata.write(TEST_FILE, {
+	ffmetadata.write(TEST_FILE_ARTWORK, {
 		artist: "bar",
 		_append: [TEST_ARTWORK],
 	}, function(err) {
 		t.ifError(err);
-		ffmetadata.read(TEST_FILE, function(err, data) {
+		ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
 			t.ifError(err);
 			t.equal(data.artist, "bar");
 			t.end();
@@ -81,4 +84,4 @@ test("write metadata with artwork", function(t) {
 	});
 });
 
-// TODO ensure integrity of additional streams 
+// TODO Ensure integrity of additional streams from `_append`
