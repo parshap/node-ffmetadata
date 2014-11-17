@@ -33,7 +33,10 @@ For video, this is where you would write additional audio streams or
 subtitle tracks.
 
 ```js
-ffmetadata.write("song.mp3", {}, ["cover.jpg"], function(err) {
+var options = {
+  streams: ["cover.jpg],
+}
+ffmetadata.write("song.mp3", {}, options, function(err) {
 	if (err) console.error("Error writing cover art");
 	else console.log("Cover art added");
 });
@@ -61,18 +64,21 @@ See [FFmpeg Metadata][] for details.
 The `callback` function is called (`callback(err, data)`) with an error
 or an object containing metadata from `file`.
 
-### `ffmetadata.write(file, data, [streams], callback)`
+### `ffmetadata.write(file, data, options, callback)`
 
-Write metadata to `file` and optionally append additional `streams`
+Write metadata to `file` and optionally append additional attachments
 (e.g., artwork image).
 
 The `data` object should contain metadata fields supported by FFmpeg.
 See the [metadata section](#metadata) above for more information.
 
-The `streams` array may be provided containing files that should be
-appended as additional streams to the file. This can be used to e.g.,
-attach artwork images; see the [artwork section](#artwork) above for
-more information.
+The `options` object may be provided with any of the following optional
+fields:
+
+ * `options.attachments`: An array of files that should be appended as
+   additional streams to the output. This can be used to e.g., attach
+   artwork images; see the [artwork section](#artwork) above for more
+   information.
 
 The `callback` function is called (`callback(err)`) when complete, with
 an error if an error occurred.

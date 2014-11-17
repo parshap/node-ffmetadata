@@ -71,9 +71,13 @@ test("write metadata", function(t) {
 	});
 });
 test("write metadata with artwork", function(t) {
-	ffmetadata.write(TEST_FILE_ARTWORK, {
+	var data = {
 		artist: "bar",
-	}, [TEST_ARTWORK], function(err) {
+	};
+	var options = {
+		attachments: [TEST_ARTWORK],
+	};
+	ffmetadata.write(TEST_FILE_ARTWORK, data, options, function(err) {
 		t.ifError(err);
 		ffmetadata.read(TEST_FILE_ARTWORK, function(err, data) {
 			t.ifError(err);
@@ -83,4 +87,4 @@ test("write metadata with artwork", function(t) {
 	});
 });
 
-// TODO Ensure integrity of additional streams from `_append`
+// TODO Ensure integrity of additional streams from `options.attachments`

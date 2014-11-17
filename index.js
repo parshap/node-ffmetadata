@@ -39,15 +39,15 @@ module.exports.read = function(src, callback) {
 	return stream;
 };
 
-module.exports.write = function(src, data, files, callback) {
-	if (typeof files === "function") {
-		callback = files;
-		files = [];
+module.exports.write = function(src, data, options, callback) {
+	if ( ! callback) {
+		callback = options;
+		options = {};
 	}
 
 	var stream = through(),
 		dst = getTempPath(src),
-		proc = spawnWrite(src, dst, data, files),
+		proc = spawnWrite(src, dst, data, options),
 		error = concat();
 
 	// Proxy any child process error events
@@ -118,15 +118,14 @@ function spawnRead(src) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
-function spawnWrite(src, dst, data, files) {
+function spawnWrite(src, dst, data, options) {
 	// ffmpeg options
 	var inputs = ["-i", src], // src input
 		maps = ['-map', '0:0'], // set as the first
 		args = ["-y"]; // overwrite file
 
-	// Append files and map options if included. This is in order, which
-	// describes the streams in order.
-	files.forEach(function(el) {
+	// Attach additional input files if included
+	getAttachments(options).forEach(function(el) {
 		var inputIndex = inputs.length / 2;
 		inputs.push('-i', el);
 		maps.push("-map", inputIndex + ":0");
@@ -144,6 +143,13 @@ function spawnWrite(src, dst, data, files) {
 	args.push(dst); // output to src path
 
 	return ffmpeg(args);
+}
+
+function getAttachments(options) {
+	if (Array.isArray(options)) {
+		return options;
+	}
+	return options.attachments || [];
 }
 
 // -- Parse ini
