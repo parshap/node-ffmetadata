@@ -126,10 +126,10 @@ function spawnWrite(src, dst, data, files) {
 
 	// Append files and map options if included. This is in order, which
 	// describes the streams in order.
-	files.forEach(function(el, i) {
-		i += 1;
+	files.forEach(function(el) {
+		var inputIndex = inputs.length / 2;
 		inputs.push('-i', el);
-		maps.push("-map", i + ":0");
+		maps.push("-map", inputIndex + ":0");
 	});
 
 	// Copy flag in order to not transcode
