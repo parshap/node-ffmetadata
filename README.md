@@ -1,9 +1,8 @@
 # node-ffmetadata
 
-Read and write media file meta data (e.g., MP3 ID3 tags) using ffmpeg's
-metadata framework.
+Read and write media metadata using ffmpeg's metadata framework.
 
-# Usage
+## Usage
 
 ```js
 var ffmetadata = require("ffmetadata");
@@ -25,7 +24,7 @@ ffmetadata.write("song.mp3", data, function(err) {
 });
 
 ```
-## Artwork
+### Artwork
 
 You can optionally include an array of files to be added to the source
 file. This is a destructive action, it will overwrite any previous
@@ -39,9 +38,9 @@ ffmetadata.write("song.mp3", {}, ["cover.jpg"], function(err) {
 	else console.log("Cover art added");
 });
 ```
-## Metadata
+### Metadata
 
-FFmpeg meta data (for songs) might include
+Metadata might include the following fields:
 
  * `"artist"`: artist name
  * `"album"`: album name
@@ -55,7 +54,30 @@ See [FFmpeg Metadata][] for details.
 
 [ffmpeg metadata]: http://wiki.multimedia.cx/index.php?title=FFmpeg_Metadata
 
-# Installation
+## API
+
+### `ffmetadata.read(file, callback)`
+
+The `callback` function is called (`callback(err, data)`) with an error
+or an object containing metadata from `file`.
+
+### `ffmetadata.write(file, data, [streams], callback)`
+
+Write metadata to `file` and optionally append additional `streams`
+(e.g., artwork image).
+
+The `data` object should contain metadata fields supported by FFmpeg.
+See the [metadata section](#metadata) above for more information.
+
+The `streams` array may be provided containing files that should be
+appended as additional streams to the file. This can be used to e.g.,
+attach artwork images; see the [artwork section](#artwork) above for
+more information.
+
+The `callback` function is called (`callback(err)`) when complete, with
+an error if an error occurred.
+
+## Installation
 
 **Dependency**: [FFmpeg][] or [libav][] must be installed on the system.
 This module uses the `ffmpeg` command-line tool. Version: 0.10.
