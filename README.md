@@ -72,16 +72,20 @@ Write metadata to `file` and optionally append additional attachments
 The `data` object should contain metadata fields supported by FFmpeg.
 See the [metadata section](#metadata) above for more information.
 
-The `options` object may be provided with any of the following optional
-fields:
+The `options` object may be provided with any of the following fields:
 
  * `options.attachments`: An array of files that should be appended as
    additional streams to the output. This can be used to e.g., attach
    artwork images; see the [artwork section](#artwork) above for more
    information.
 
-The `callback` function is called (`callback(err)`) when complete, with
-an error if an error occurred.
+ * `options["id3v2.3"]`: If this property is truthy, id3 v2.3 will be
+   used (instead of the default of v2.4). This is useful if
+   compatibility with *Windows Explorer* is desired (see [#8][pull8]).
+
+[pull8]: https://github.com/parshap/node-ffmetadata/pull/8
+
+`callback(err)` is called when finished, with an error if one occurred.
 
 ## Installation
 

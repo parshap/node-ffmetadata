@@ -134,6 +134,10 @@ function spawnWrite(src, dst, data, options) {
 	// Copy flag in order to not transcode
 	args = args.concat(inputs, maps, ["-codec", "copy"]);
 
+	if (options["id3v2.3"]) {
+		args.push("-id3v2_version", "3");
+	}
+
 	// append metadata
 	Object.keys(data).forEach(function(name) {
 		args.push("-metadata");
