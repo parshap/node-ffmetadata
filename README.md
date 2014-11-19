@@ -6,11 +6,10 @@ Read and write media metadata using ffmpeg's metadata framework.
 
 ```js
 var ffmetadata = require("ffmetadata");
-var fs = require("fs");
 
 // Read song.mp3 metadata
 ffmetadata.read("song.mp3", function(err, data) {
-	if (err) console.error("Error reading metadata, err");
+	if (err) console.error("Error reading metadata", err);
 	else console.log(data);
 });
 
@@ -19,7 +18,7 @@ var data = {
   artist: "Me",
 };
 ffmetadata.write("song.mp3", data, function(err) {
-	if (err) console.error("Error writing metadata");
+	if (err) console.error("Error writing metadata", err);
 	else console.log("Data written");
 });
 
