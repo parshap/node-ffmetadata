@@ -70,6 +70,7 @@ test("write metadata", function(t) {
 		});
 	});
 });
+
 test("write metadata with artwork", function(t) {
 	var data = {
 		artist: "bar",
@@ -88,3 +89,20 @@ test("write metadata with artwork", function(t) {
 });
 
 // TODO Ensure integrity of additional streams from `options.attachments`
+
+test("write metadata", function(t) {
+	var data = {
+		artist: "foo",
+		track: "1/10",
+		disc: "2/2",
+	};
+	var options = {
+		"id3v2.3": true,
+		dryRun: true,
+	};
+	var args = ffmetadata.write(TEST_FILE, data, options);
+	var index = args.indexOf("-id3v2_version");
+	t.notEqual(index, -1);
+	t.equal(args[index + 1], "3");
+	t.end();
+});
