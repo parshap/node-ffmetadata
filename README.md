@@ -83,6 +83,11 @@ The `options` object may be provided with any of the following fields:
    used (instead of the default of v2.4). This is useful if
    compatibility with *Windows Explorer* is desired (see [#8][pull8]).
 
+ * `options.dryRun`: If this property is truthy, the `ffmpeg` process is
+   not actually invoked and instead an array of the arguments that
+   *would* have been used to invoke ffmpeg is returned synchronously.
+   The `callback` argument is not used in this case.
+
 [pull8]: https://github.com/parshap/node-ffmetadata/pull/8
 
 `callback(err)` is called when finished, with an error if one occurred.

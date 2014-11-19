@@ -40,14 +40,20 @@ module.exports.read = function(src, callback) {
 };
 
 module.exports.write = function(src, data, options, callback) {
-	if ( ! callback) {
+	if (typeof options === "function") {
 		callback = options;
 		options = {};
 	}
 
 	var stream = through(),
 		dst = getTempPath(src),
-		proc = spawnWrite(src, dst, data, options),
+		args = getWriteArgs(src, dst, data, options);
+
+	if (options.dryRun) {
+		return args;
+	}
+
+	var proc = ffmpeg(args),
 		error = concat();
 
 	// Proxy any child process error events
@@ -118,7 +124,7 @@ function spawnRead(src) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
-function spawnWrite(src, dst, data, options) {
+function getWriteArgs(src, dst, data, options) {
 	// ffmpeg options
 	var inputs = ["-i", src], // src input
 		maps = ['-map', '0:0'], // set as the first
@@ -146,7 +152,7 @@ function spawnWrite(src, dst, data, options) {
 
 	args.push(dst); // output to src path
 
-	return ffmpeg(args);
+	return args;
 }
 
 function getAttachments(options) {
