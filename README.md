@@ -34,8 +34,8 @@ subtitle tracks.
 
 ```js
 var options = {
-  streams: ["cover.jpg],
-}
+  attachments: ["cover.jpg"],
+};
 ffmetadata.write("song.mp3", {}, options, function(err) {
 	if (err) console.error("Error writing cover art");
 	else console.log("Cover art added");
