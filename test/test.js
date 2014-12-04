@@ -45,6 +45,16 @@ test("copy test files", function(t) {
 	end.on("end", t.end.bind(t));
 });
 
+test("read metadata dry run", function(t) {
+	var options = {
+		dryRun: true,
+	};
+	var args = ffmetadata.read(TEST_FILE, options);
+	t.ok(args);
+	t.ok(args.length > 0);
+	t.end();
+});
+
 test("read metadata", function(t) {
 	ffmetadata.read(TEST_FILE, function(err, data) {
 		t.ifError(err);

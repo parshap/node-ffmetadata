@@ -58,12 +58,17 @@ See [FFmpeg Metadata][] for details.
 
 ## API
 
-### `ffmetadata.read(file, callback)`
+### `ffmetadata.read(file, [options], callback)`
 
 The `callback` function is called (`callback(err, data)`) with an error
 or an object containing metadata from `file`.
 
-### `ffmetadata.write(file, data, options, callback)`
+If `options.dryRun` is truthy, the `ffmpeg` process is not actually
+invoked and instead an array of the arguments that *would* have been
+used to invoke ffmpeg is returned synchronously.  The `callback`
+argument is not used in this case.
+
+### `ffmetadata.write(file, data, [options], callback)`
 
 Write metadata to `file` and optionally append additional attachments
 (e.g., artwork image).

@@ -7,9 +7,20 @@ var spawn = require("child_process").spawn,
 	through = require("through"),
 	concat = require("concat-stream");
 
-module.exports.read = function(src, callback) {
-	var stream = through(),
-		proc = spawnRead(src),
+module.exports.read = function(src, options, callback) {
+	if (typeof options === "function") {
+		callback = options;
+		options = {};
+	}
+
+	var args = getReadArgs(src);
+
+	if (options.dryRun) {
+		return args;
+	}
+
+	var proc = spawnRead(args),
+		stream = through(),
 		output = parseini(),
 		error = concat();
 
@@ -45,8 +56,7 @@ module.exports.write = function(src, data, options, callback) {
 		options = {};
 	}
 
-	var stream = through(),
-		dst = getTempPath(src),
+	var dst = getTempPath(src),
 		args = getWriteArgs(src, dst, data, options);
 
 	if (options.dryRun) {
@@ -54,6 +64,7 @@ module.exports.write = function(src, data, options, callback) {
 	}
 
 	var proc = ffmpeg(args),
+		stream = through(),
 		error = concat();
 
 	// Proxy any child process error events
@@ -112,15 +123,17 @@ function getTempPath(src) {
 
 // -- Child process helpers
 
-function spawnRead(src) {
-	var args = [
+function getReadArgs(src) {
+	return [
 		"-i",
 		src,
 		"-f",
 		"ffmetadata",
 		"pipe:1", // output to stdout
 	];
+}
 
+function spawnRead(args) {
 	return ffmpeg(args, { detached: true, encoding: "binary" });
 }
 
