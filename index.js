@@ -2,10 +2,27 @@
 "use strict";
 
 var spawn = require("child_process").spawn,
-	ffmpeg = spawn.bind(null, "ffmpeg"),
+	spawnSync = require("child_process").spawnSync,
+	ffmpeg = choosePlayer(),
 	fs = require("fs"),
 	through = require("through"),
 	concat = require("concat-stream");
+
+function choosePlayer(){
+	var choices = ["avconv", "ffmpeg"];
+
+	while(choices.length > 0){
+		var choice = choices.shift();
+		var proc = spawnSync(choice);
+
+		if(!proc.error){
+			return spawn.bind(null, choice);
+		}
+	}
+
+	throw new Error("Please install ffmpeg/avconv and add it to the path!");
+	return null;
+}
 
 module.exports.read = function(src, options, callback) {
 	if (typeof options === "function") {
