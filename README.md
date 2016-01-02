@@ -96,6 +96,11 @@ The `options` object may be provided with any of the following fields:
 
 `callback(err)` is called when finished, with an error if one occurred.
 
+## Environment Variables
+
+`FFMPEG_PATH`: Path to `ffmpeg` executable. Useful on Windows or when
+`ffmpeg` is not in your `PATH`.
+
 ## Installation
 
 **Dependency**: [FFmpeg][] or [libav][] must be installed on the system.
