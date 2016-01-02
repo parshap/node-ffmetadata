@@ -2,7 +2,7 @@
 "use strict";
 
 var spawn = require("child_process").spawn,
-	ffmpeg = spawn.bind(null, "ffmpeg"),
+	ffmpeg = spawn.bind(null, process.env.FFMPEG_PATH || "ffmpeg"),
 	fs = require("fs"),
 	through = require("through"),
 	concat = require("concat-stream");
