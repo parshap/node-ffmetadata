@@ -182,6 +182,8 @@ var combine = require("stream-combiner"),
 	split = require("split");
 
 function parseini(callback) {
+	var tag;
+
 	var stream = combine(
 		split(),
 		filter(Boolean),
@@ -199,9 +201,23 @@ function parseini(callback) {
 	return stream;
 
 	function parseLine(data) {
+
 		data = unescapeini(data);
+
 		var index = data.indexOf("=");
-		stream.data[data.slice(0, index)] = data.slice(index + 1);
+
+		if ( index !== -1 ) {
+
+			tag = data.slice(0, index);
+
+			if (!stream.data[tag]) {
+				stream.data[tag] = data.slice(index + 1);
+			}
+
+		} else {
+
+			stream.data[tag] += data;
+		}
 	}
 }
 
