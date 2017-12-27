@@ -13,7 +13,7 @@ module.exports.read = function(src, options, callback) {
 		options = {};
 	}
 
-	var args = getReadArgs(src);
+	var args = getReadArgs(src, options);
 
 	if (options.dryRun) {
 		return args;
@@ -123,7 +123,15 @@ function getTempPath(src) {
 
 // -- Child process helpers
 
-function getReadArgs(src) {
+function getReadArgs(src, options) {
+	if (typeof options.coverPath !== 'undefined' ) {
+		return [
+			'-i',
+			src,
+			options.coverPath
+		];
+	}
+
 	return [
 		"-i",
 		src,
