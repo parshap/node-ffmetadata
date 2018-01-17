@@ -206,6 +206,8 @@ function parseini(callback) {
 
 	return stream;
 
+	var key;
+
 	function parseLine(data) {
 		data = unescapeini(data);
 		var index = data.indexOf("=");
