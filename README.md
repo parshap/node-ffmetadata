@@ -94,6 +94,8 @@ The `options` object may be provided with any of the following fields:
 
 [pull8]: https://github.com/parshap/node-ffmetadata/pull/8
 
+ * `options.coverPath`: Option to provide a path, where `ffmpeg` will save cover image. If file contains PNG image and `coverPath` is `cover.jpg`, `ffmpeg` will convert image to JPG.
+
 `callback(err)` is called when finished, with an error if one occurred.
 
 ## Environment Variables
