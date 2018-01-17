@@ -209,7 +209,14 @@ function parseini(callback) {
 	function parseLine(data) {
 		data = unescapeini(data);
 		var index = data.indexOf("=");
-		stream.data[data.slice(0, index)] = data.slice(index + 1);
+
+		if (index === -1) {
+			stream.data[key] += data.slice(index + 1);
+			stream.data[key] = stream.data[key].replace('\\', '\n');
+		} else {
+			key = data.slice(0, index);
+			stream.data[key] = data.slice(index + 1);
+		}
 	}
 }
 
