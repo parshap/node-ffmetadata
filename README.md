@@ -68,6 +68,8 @@ invoked and instead an array of the arguments that *would* have been
 used to invoke ffmpeg is returned synchronously.  The `callback`
 argument is not used in this case.
 
+`options.coverPath`: Option to provide a path, where `ffmpeg` will save cover image. Unfortunately, `ffmpeg` will always convert resulted image, based on extension in provided `coverPath`.
+
 ### `ffmetadata.write(file, data, [options], callback)`
 
 Write metadata to `file` and optionally append additional attachments
@@ -93,8 +95,6 @@ The `options` object may be provided with any of the following fields:
    The `callback` argument is not used in this case.
 
 [pull8]: https://github.com/parshap/node-ffmetadata/pull/8
-
- * `options.coverPath`: Option to provide a path, where `ffmpeg` will save cover image. If file contains PNG image and `coverPath` is `cover.jpg`, `ffmpeg` will convert image to JPG.
 
 `callback(err)` is called when finished, with an error if one occurred.
 
