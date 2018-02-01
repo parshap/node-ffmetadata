@@ -13,7 +13,7 @@ module.exports.read = function(src, options, callback) {
 		options = {};
 	}
 
-	var args = getReadArgs(src);
+	var args = getReadArgs(src, options);
 
 	if (options.dryRun) {
 		return args;
@@ -123,7 +123,15 @@ function getTempPath(src) {
 
 // -- Child process helpers
 
-function getReadArgs(src) {
+function getReadArgs(src, options) {
+	if (typeof options.coverPath !== 'undefined' ) {
+		return [
+			'-i',
+			src,
+			options.coverPath
+		];
+	}
+
 	return [
 		"-i",
 		src,
@@ -198,10 +206,19 @@ function parseini(callback) {
 
 	return stream;
 
+	var key;
+
 	function parseLine(data) {
 		data = unescapeini(data);
 		var index = data.indexOf("=");
-		stream.data[data.slice(0, index)] = data.slice(index + 1);
+
+		if (index === -1) {
+			stream.data[key] += data.slice(index + 1);
+			stream.data[key] = stream.data[key].replace('\\', '\n');
+		} else {
+			key = data.slice(0, index);
+			stream.data[key] = data.slice(index + 1);
+		}
 	}
 }
 

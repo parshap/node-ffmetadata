@@ -68,6 +68,8 @@ invoked and instead an array of the arguments that *would* have been
 used to invoke ffmpeg is returned synchronously.  The `callback`
 argument is not used in this case.
 
+`options.coverPath`: Option to provide a path, where `ffmpeg` will save cover image. Unfortunately, `ffmpeg` will always convert resulted image, based on extension in provided `coverPath`.
+
 ### `ffmetadata.write(file, data, [options], callback)`
 
 Write metadata to `file` and optionally append additional attachments
