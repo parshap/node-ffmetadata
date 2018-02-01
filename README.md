@@ -2,6 +2,15 @@
 
 Read and write media metadata using ffmpeg's metadata framework.
 
+## Alternatives
+
+* https://github.com/voltraco/node-taglib2
+* https://github.com/vankasteelj/mediainfo-wrapper
+
+See also [#19][] for some discussion.
+
+[#19]: https://github.com/parshap/node-ffmetadata/pull/19#issuecomment-362028421
+
 ## Usage
 
 ```js
