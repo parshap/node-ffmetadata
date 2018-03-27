@@ -116,3 +116,17 @@ test("write metadata", function(t) {
 	t.equal(args[index + 1], "3");
 	t.end();
 });
+
+
+test("write metadata preserve streams", function(t) {
+   var data = {};
+   var options = {
+   	preserveStreams: true,
+      dryRun: true
+   };
+   var args = ffmetadata.write(TEST_FILE, data, options);
+   var index = args.indexOf("-map");
+   t.notEqual(index, -1);
+   t.equal(args[index + 1], "0");
+   t.end();
+});
