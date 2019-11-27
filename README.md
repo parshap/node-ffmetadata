@@ -94,6 +94,9 @@ The `options` object may be provided with any of the following fields:
    artwork images; see the [artwork section](#artwork) above for more
    information.
 
+ * `options["id3v1"]`: If this property is truthy, id3 v1 will also be
+   included. This is useful if compatibility with *Windows Explorer* is desired.
+
  * `options["id3v2.3"]`: If this property is truthy, id3 v2.3 will be
    used (instead of the default of v2.4). This is useful if
    compatibility with *Windows Explorer* is desired (see [#8][pull8]).
