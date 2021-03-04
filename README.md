@@ -117,7 +117,7 @@ The `options` object may be provided with any of the following fields:
 
 By default, the module looks for the ffmpeg executable either in the `FFMPEG_PATH`
 and `PATH` environmental variables. You may also set this path in the code by
-calling the `ffmetadata.setPath("path/to/ffmpeg")` function.
+calling the `ffmetadata.setFfmpegPath("path/to/ffmpeg")` function.
 
 ## Installation
 
