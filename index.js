@@ -7,6 +7,10 @@ var spawn = require("child_process").spawn,
 	through = require("through"),
 	concat = require("concat-stream");
 
+module.exports.setPath = function(path) {
+	ffmpeg = spawn.bind(null, path || "ffmpeg");
+};
+
 module.exports.read = function(src, options, callback) {
 	if (typeof options === "function") {
 		callback = options;
