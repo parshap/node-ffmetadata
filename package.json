@@ -1,6 +1,6 @@
 {
   "name": "ffmetadata",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "description": "Read and write media metadata using ffmpeg",
   "main": "index.js",
   "directories": {
