@@ -16,6 +16,9 @@ See also [#19][] for some discussion.
 ```js
 var ffmetadata = require("ffmetadata");
 
+// Set path to ffmpeg - optional if in $PATH or $FFMPEG_PATH
+ffmetadata.setPath("/path/to/ffmpeg");
+
 // Read song.mp3 metadata
 ffmetadata.read("song.mp3", function(err, data) {
 	if (err) console.error("Error reading metadata", err);
@@ -110,10 +113,11 @@ The `options` object may be provided with any of the following fields:
 
 `callback(err)` is called when finished, with an error if one occurred.
 
-## Environment Variables
+## Path to FFmpeg
 
-`FFMPEG_PATH`: Path to `ffmpeg` executable. Useful on Windows or when
-`ffmpeg` is not in your `PATH`.
+By default, the module looks for the ffmpeg executable either in the `FFMPEG_PATH`
+and `PATH` environmental variables. You may also set this path in the code by
+calling the `ffmetadata.setPath("path/to/ffmpeg")` function.
 
 ## Installation
 
