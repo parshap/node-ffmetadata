@@ -17,7 +17,7 @@ See also [#19][] for some discussion.
 var ffmetadata = require("ffmetadata");
 
 // Set path to ffmpeg - optional if in $PATH or $FFMPEG_PATH
-ffmetadata.setPath("/path/to/ffmpeg");
+ffmetadata.setFfmpegPath("/path/to/ffmpeg");
 
 // Read song.mp3 metadata
 ffmetadata.read("song.mp3", function(err, data) {
