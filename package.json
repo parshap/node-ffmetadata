@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "node test/*.js"
+    "test": "node test/*.js",
+    "build": "tsc index.ts"
   },
   "repository": {
     "type": "git",
@@ -29,10 +30,11 @@
   },
   "dependencies": {
     "concat-stream": "~1.0.0",
-    "through": "~2.3.4",
     "split": "~0.2.6",
     "stream-combiner": "0.0.2",
-    "stream-filter": "1"
+    "stream-filter": "1",
+    "through": "~2.3.4",
+    "typescript": "^5.2.2"
   },
   "devDependencies": {
     "tape": "~1.0.4"
